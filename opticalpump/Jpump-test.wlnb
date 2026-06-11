@@ -1,0 +1,190 @@
+{
+ "cells": [
+  {
+   "kind": 2,
+   "value": "(*计算Jpump，测试文件，忽略弛豫，存在自发辐射*)\r\n(*因此现在是1个激发态，两个基态，不考虑从超精细结构，激发态S1/2有两个磁量子数，基态分别是2，4，所以是8维矩阵*)\r\n(*首先写原子自能以及受激项*)\r\n(*Qm是optical spin operator Q=1/2(1e-1g)*)\r\nQm=1/2DiagonalMatrix[{1,1,-1,-1,-1,-1,-1,-1}];\r\n\r\n(*rho0，是初始密度矩阵，就是微分方程的边界，*)\r\n\r\nrho0=",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "rho0[e1_,e2_,g11_,g12_,g21_,g22_,g23_,g24_]:=DiagonalMatrix[{e1,e2,g11,g12,g21,g22,g23,g24}];\r\nrho0t[e1_,e2_,g11_,g12_,g21_,g22_,g23_,g24_]:=Exp[I*Phi[0]]*rho0[e1,e2,g11,g12,g21,g22,g23,g24]*Exp[-I*Phi[0]];",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781165438510,
+     "endTime": 1781165438695
+    },
+    "executionOrder": 1,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "rho0[0,0,1/4,1/4,1/8,1/8,1/8,1/8]//TraditionalForm",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow style=\"font-family:&quot;Times&quot;;\"><w></w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(8,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>4</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>4</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>8</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>8</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>8</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><w>1</w></w><w><w></w><w><w>8</w></w></w></wfrac></w></wgrid><w>⁠</w><wb>)</wb></wrow></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "BoxData[RowBox[{\"(\", \"⁠\", GridBox[{{\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", FractionBox[\"1\", \"4\"], \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", FractionBox[\"1\", \"4\"], \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", FractionBox[\"1\", \"8\"], \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", FractionBox[\"1\", \"8\"], \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", FractionBox[\"1\", \"8\"], \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", FractionBox[\"1\", \"8\"]}}, RowSpacings -> 1, ColumnSpacings -> 1, RowAlignments -> Baseline, ColumnAlignments -> Center], \"⁠\", \")\"}], TraditionalForm]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "d0bb31d6-c978-4d8f-b4e0-9586fb302538",
+     "metadata": {
+      "cellLabel": "Out[4]//TraditionalForm= ",
+      "isBoxData": true
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781165638740,
+     "endTime": 1781165638915
+    },
+    "executionOrder": 4,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "Simplify[rho0t[0,0,1/4,1/4,1/8,1/8,1/8,1/8]-rho0[0,0,1/4,1/4,1/8,1/8,1/8,1/8]]//TraditionalForm",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow style=\"font-family:&quot;Times&quot;;\"><w></w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(8,max-content);\"><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w></wgrid><w>⁠</w><wb>)</wb></wrow></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "BoxData[RowBox[{\"(\", \"⁠\", GridBox[{{\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}}, RowSpacings -> 1, ColumnSpacings -> 1, RowAlignments -> Baseline, ColumnAlignments -> Center], \"⁠\", \")\"}], TraditionalForm]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "fb9ed1d1-6838-4d60-a0e7-09b2ac75670e",
+     "metadata": {
+      "cellLabel": "Out[7]//TraditionalForm= ",
+      "isBoxData": true
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781165690567,
+     "endTime": 1781165690730
+    },
+    "executionOrder": 7,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "H0=DiagonalMatrix[{1/2*hb*omegaeg,1/2*hb*omegaeg,-1/2*hb*omegaeg-deltaE/2,-1/2*hb*omegaeg-deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2}];\r\nK0=H0-hbar*omegaL*Qm;",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781167008195,
+     "endTime": 1781167008374
+    },
+    "executionOrder": 10,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "H0//TraditionalForm",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow style=\"font-family:&quot;Times&quot;;\"><w></w><wrow><w></w><wb>(</wb><w>⁠</w><wgrid style=\"grid-template-columns:repeat(8,max-content);\"><w><wfrac><w><wrow><w></w><w>hb</w><w></w><w>omegaeg</w></wrow></w><w><w></w><w><w>2</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wfrac><w><wrow><w></w><w>hb</w><w></w><w>omegaeg</w></wrow></w><w><w></w><w><w>2</w></w></w></wfrac></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wrow><w></w><w>-</w><wrow><w></w><wfrac><w><w>deltaE</w></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></wrow><w>-</w><wfrac><w><wrow><w></w><w>hb</w><w></w><w>omegaeg</w></wrow></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wrow><w></w><w>-</w><wrow><w></w><wfrac><w><w>deltaE</w></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></wrow><w>-</w><wfrac><w><wrow><w></w><w>hb</w><w></w><w>omegaeg</w></wrow></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wfrac><w><w>deltaE</w></w><w><w></w><w><w>2</w></w></w></wfrac><w>-</w><wfrac><w><wrow><w></w><w>hb</w><w></w><w>omegaeg</w></wrow></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wfrac><w><w>deltaE</w></w><w><w></w><w><w>2</w></w></w></wfrac><w>-</w><wfrac><w><wrow><w></w><w>hb</w><w></w><w>omegaeg</w></wrow></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wfrac><w><w>deltaE</w></w><w><w></w><w><w>2</w></w></w></wfrac><w>-</w><wfrac><w><wrow><w></w><w>hb</w><w></w><w>omegaeg</w></wrow></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><w>0</w></w><w><wrow><w></w><wfrac><w><w>deltaE</w></w><w><w></w><w><w>2</w></w></w></wfrac><w>-</w><wfrac><w><wrow><w></w><w>hb</w><w></w><w>omegaeg</w></wrow></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></w></wgrid><w>⁠</w><wb>)</wb></wrow></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "BoxData[RowBox[{\"(\", \"⁠\", GridBox[{{FractionBox[RowBox[{\"hb\", \" \", \"omegaeg\"}], \"2\"], \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", FractionBox[RowBox[{\"hb\", \" \", \"omegaeg\"}], \"2\"], \"0\", \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", RowBox[{RowBox[{\"-\", RowBox[{FractionBox[\"deltaE\", \"2\"]}]}], \"-\", FractionBox[RowBox[{\"hb\", \" \", \"omegaeg\"}], \"2\"]}], \"0\", \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", RowBox[{RowBox[{\"-\", RowBox[{FractionBox[\"deltaE\", \"2\"]}]}], \"-\", FractionBox[RowBox[{\"hb\", \" \", \"omegaeg\"}], \"2\"]}], \"0\", \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", RowBox[{FractionBox[\"deltaE\", \"2\"], \"-\", FractionBox[RowBox[{\"hb\", \" \", \"omegaeg\"}], \"2\"]}], \"0\", \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", RowBox[{FractionBox[\"deltaE\", \"2\"], \"-\", FractionBox[RowBox[{\"hb\", \" \", \"omegaeg\"}], \"2\"]}], \"0\", \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", RowBox[{FractionBox[\"deltaE\", \"2\"], \"-\", FractionBox[RowBox[{\"hb\", \" \", \"omegaeg\"}], \"2\"]}], \"0\"}, {\"0\", \"0\", \"0\", \"0\", \"0\", \"0\", \"0\", RowBox[{FractionBox[\"deltaE\", \"2\"], \"-\", FractionBox[RowBox[{\"hb\", \" \", \"omegaeg\"}], \"2\"]}]}}, RowSpacings -> 1, ColumnSpacings -> 1, RowAlignments -> Baseline, ColumnAlignments -> Center], \"⁠\", \")\"}], TraditionalForm]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "fb0e0339-f294-4898-bff1-23796ee7360b",
+     "metadata": {
+      "cellLabel": "Out[13]//TraditionalForm= ",
+      "isBoxData": true
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781167019803,
+     "endTime": 1781167019966
+    },
+    "executionOrder": 13,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "D={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d1*Delta[1/2,1/2,1/2,1/2],d1*Delta[1/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d1*Delta[1/2,-1/2,1/2,1/2],d1*Delta[1/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,3/2,1/2,1/2],d2*Delta[3/2,3/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,1/2,1/2,1/2],d2*Delta[3/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,-1/2,1/2,1/2],d2*Delta[3/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,-3/2,1/2,1/2],d2*Delta[3/2,-3/2,1/2,-1/2],0,0,0,0,0,0}};",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  },
+  {
+   "kind": 2,
+   "value": "Delta[3/2,-1/2,1/2,-1/2]",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><w>Delta</w><wrow><w></w><wb>[</wb><wrow><w></w><wfrac><w><w>3</w></w><w><w></w><w><w>2</w></w></w></wfrac><w>,</w><wrow><w></w><w>-</w><wfrac><w><w>1</w></w><w><w></w><w><w>2</w></w></w></wfrac></wrow><w>,</w><wfrac><w><w>1</w></w><w><w></w><w><w>2</w></w></w></wfrac><w>,</w><wrow><w></w><w>-</w><wfrac><w><w>1</w></w><w><w></w><w><w>2</w></w></w></wfrac></wrow></wrow><wb>]</wb></wrow></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "Delta[3/2, -1/2, 1/2, -1/2]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "28eb4560-f3f0-475c-912b-a6db49dd860a",
+     "metadata": {
+      "cellLabel": "Out[14]= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781168341290,
+     "endTime": 1781168341477
+    },
+    "executionOrder": 14,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "Ddown={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d1*Delta[1/2,1/2,1/2,1/2],d1*Delta[1/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d1*Delta[1/2,-1/2,1/2,1/2],d1*Delta[1/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,3/2,1/2,1/2],d2*Delta[3/2,3/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,1/2,1/2,1/2],d2*Delta[3/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,-1/2,1/2,1/2],d2*Delta[3/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,-3/2,1/2,1/2],d2*Delta[3/2,-3/2,1/2,-1/2],0,0,0,0,0,0}};\r\nDdagger={{0,0,d1*Delta[1/2,1/2,1/2,1/2],d1*Delta[1/2,1/2,1/2,-1/2],d2*Delta[1/2,1/2,3/2,3/2],d2*Delta[1/2,1/2,3/2,1/2],d2*Delta[1/2,1/2,3/2,-1/2],d2*Delta[1/2,1/2,3/2,-3/2]},{0,0,d1*Delta[1/2,-1/2,1/2,1/2],d1*Delta[1/2,-1/2,1/2,-1/2],d2*Delta[1/2,-1/2,3/2,3/2],d2*Delta[1/2,-1/2,3/2,1/2],d2*Delta[1/2,-1/2,3/2,-1/2],d2*Delta[1/2,-1/2,3/2,-3/2]},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "cells": [
+  {
+   "kind": 2,
+   "value": "(*计算Jpump，计算文件，忽略弛豫，存在自发辐射*)\r\n(*因此现在是1个激发态，两个基态，不考虑从超精细结构，激发态S1/2有两个磁量子数，基态分别是2，4，所以是8维矩阵*)\r\n(*参数取值*)\r\n(*hbar*)hb=1;\r\n(*激光频率，也就是249nm*)omegaL=1;\r\n(*激发态和基态平均能量的中间*)omegaeg=1;\r\n(*基态亚稳态能量差*)deltaE=1;\r\n(*激光的复振幅，带有振幅和初始相位*)Et=1*Exp[I*Pi/4];\r\n(*k0，激光的波矢，r0原子的初始位置*)\r\nk0={0,0,1};\r\nr0={1,0,0};\r\n(*根据mma的定义，这里三对系数分别是j1m1,j2m2,jm分别对应两个分角动量和最终的总角动量，和Wigner-Eckart定理的对应是j1m1对应初态目前记为JmJ，j2m2对应秩和投影目前秩是1因为矢量算符，投影是0，±1等于ms-mJ，jm对应末态记为SmS*)\r\n(*Δ矩阵元,<sms|Delta_q|jmj>,q直接用ms-mj替代，共轭只需要转置因此只定义一个就够，到时候用的时候注意一下角动量取值和物理意义的区分*)\r\nDelta[s_,ms_,j_,mj_]:=Sqrt[3/2s+1]*ClebschGordan[{j,mj},{1,ms-mj},{s,ms}];\r\n(*跃迁振子系数：d1,d2，分别对应两个基态，1是1/2，2是3/2*)",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781170121727,
+     "endTime": 1781170122206
+    },
+    "executionOrder": 1,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "(*定义哈密顿量，变换后的K*)\r\n(*K0,H0,omegaeg是能量中心,deltaE是基态亚稳态能级差，g1是基态是1/2那个，g2是亚稳态3/2的*)\r\nH0=DiagonalMatrix[{1/2*hb*omegaeg,1/2*hb*omegaeg,-1/2*hb*omegaeg-deltaE/2,-1/2*hb*omegaeg-deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2}];\r\nK0=H0-hbar*omegaL*Qm;\r\n(*KI*)\r\n(*降算符Ddown，和升算符Ddagger*)\r\nDdown={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d1*Delta[1/2,1/2,1/2,1/2],d1*Delta[1/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d1*Delta[1/2,-1/2,1/2,1/2],d1*Delta[1/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,3/2,1/2,1/2],0,0,0,0,0,0,0},{d2*Delta[3/2,1/2,1/2,1/2],d2*Delta[3/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,-1/2,1/2,1/2],d2*Delta[3/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{0,d2*Delta[3/2,-3/2,1/2,-1/2],0,0,0,0,0,0}};\r\nDdagger={{0,0,d1*Delta[1/2,1/2,1/2,1/2],d1*Delta[1/2,1/2,1/2,-1/2],d2*Delta[1/2,1/2,3/2,3/2],d2*Delta[1/2,1/2,3/2,1/2],d2*Delta[1/2,1/2,3/2,-1/2],0},{0,0,d1*Delta[1/2,-1/2,1/2,1/2],d1*Delta[1/2,-1/2,1/2,-1/2],0,d2*Delta[1/2,-1/2,3/2,1/2],d2*Delta[1/2,-1/2,3/2,-1/2],d2*Delta[1/2,-1/2,3/2,-3/2]},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};\r\n(*V1t是转动之后的Ddagger部分,V2t是转动之后的Ddown部分*)\r\nV1t=-Ddagger*Et*Exp[I*k0.r0];\r\nV2t=-Ddown*Conjugate[Et]*Exp[-I*k0.r0];\r\nKI=V1t+V2t;",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781170161921,
+     "endTime": 1781170162226
+    },
+    "executionOrder": 10,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {}
+  }
+ ]
+}
