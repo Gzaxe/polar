@@ -2,31 +2,291 @@
  "cells": [
   {
    "kind": 2,
-   "value": "(*计算Jpump，计算文件，忽略弛豫，存在自发辐射*)\r\n(*因此现在是1个激发态，两个基态，不考虑从超精细结构，激发态S1/2有两个磁量子数，基态分别是2，4，所以是8维矩阵*)\r\n(*参数取值*)\r\n(*hbar*)hb=1;\r\n(*激光频率，也就是249nm*)omegaL=1;\r\n(*激发态和基态平均能量的中间*)omegaeg=1;\r\n(*基态亚稳态能量差*)deltaE=1;\r\n(*激光的复振幅，带有振幅和初始相位*)Et=1*Exp[I*Pi/4];\r\n(*k0，激光的波矢，r0原子的初始位置*)\r\nk0={0,0,1};\r\nr0={1,0,0};\r\n(*根据mma的定义，这里三对系数分别是j1m1,j2m2,jm分别对应两个分角动量和最终的总角动量，和Wigner-Eckart定理的对应是j1m1对应初态目前记为JmJ，j2m2对应秩和投影目前秩是1因为矢量算符，投影是0，±1等于ms-mJ，jm对应末态记为SmS*)\r\n(*Δ矩阵元,<sms|Delta_q|jmj>,q直接用ms-mj替代，共轭只需要转置因此只定义一个就够，到时候用的时候注意一下角动量取值和物理意义的区分*)\r\nDelta[s_,ms_,j_,mj_]:=Sqrt[3/2s+1]*ClebschGordan[{j,mj},{1,ms-mj},{s,ms}];\r\n(*跃迁振子系数：d1,d2，分别对应两个基态，1是1/2，2是3/2*)",
+   "value": "(*计算Jpump，计算文件，忽略弛豫，存在自发辐射*)\r\n(*因此现在是1个激发态，两个基态，不考虑从超精细结构，激发态S1/2有两个磁量子数，基态分别是2，4，所以是8维矩阵*)\r\n(*参数取值*)\r\nhbar=1;\r\n(*激光频率，也就是249nm*)omegaL=1;\r\n(*激发态和基态平均能量的中间*)omegaeg=1;\r\n(*基态亚稳态能量差*)deltaE=1;\r\n(*振幅和初始相位*)\r\nEx=1;\r\nEy=0;\r\nEz=0;\r\nphi=Pi/4;\r\n(*k0，激光的波矢，r0原子的初始位置*)\r\nk0={0,0,1};\r\nr0={1,0,0};\r\n(*总的自发辐射系数Gmsa，g1e的是Gms1和g2e的Gms2*)\r\nGmsa=Gms1+Gms2;\r\nGms1=2;\r\nGms2=3;\r\n(*跃迁振子系数：d1,d2，分别对应两个基态，1是1/2的，2是3/2的*)\r\nd1=1;\r\nd2=1;\r\n(*CG系数定义偶极矩阵元*)\r\n(*根据mma的定义，这里三对系数分别是j1m1,j2m2,jm分别对应两个分角动量和最终的总角动量，和Wigner-Eckart定理的对应是j1m1对应初态目前记为JmJ，j2m2对应秩和投影目前秩是1因为矢量算符，投影是0，±1等于ms-mJ，jm对应末态记为SmS*)\r\n(*Δ矩阵元,<sms|Delta_q|jmj>,q直接用ms-mj替代，共轭只需要转置因此只定义一个就够，到时候用的时候注意一下角动量取值和物理意义的区分*)\r\nDelta[s_,ms_,j_,mj_]=Sqrt[3/(2s+1)]*ClebschGordan[{j,mj},{1,ms-mj},{s,ms}];\r\n(*Qm是optical spin operator Q=1/2(1e-1g)*)\r\nQm=1/2*DiagonalMatrix[{1,1,-1,-1,-1,-1,-1,-1}];\r\n(*粒子横向速度取0,认为激光垂直入射*)\r\nPHI[t_]=omegaL*Qm*t;\r\n(*初始粒子布居即密度矩阵初态*)\r\nrho0[e1_,e2_,g11_,g12_,g21_,g22_,g23_,g24_]:=DiagonalMatrix[{e1,e2,g11,g12,g21,g22,g23,g24}];\r\nrho0t[e1_,e2_,g11_,g12_,g21_,g22_,g23_,g24_]:=Exp[I*PHI[0]]*rho0[e1,e2,g11,g12,g21,g22,g23,g24]*Exp[-I*PHI[0]];",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
    "executionSummary": {
     "timing": {
-     "startTime": 1781170121727,
-     "endTime": 1781170122206
+     "startTime": 1781601591082,
+     "endTime": 1781601592777
     },
-    "executionOrder": 1,
+    "executionOrder": 67,
     "success": true
    }
   },
   {
    "kind": 2,
-   "value": "(*定义哈密顿量，变换后的K*)\r\n(*K0,H0,omegaeg是能量中心,deltaE是基态亚稳态能级差，g1是基态是1/2那个，g2是亚稳态3/2的*)\r\nH0=DiagonalMatrix[{1/2*hb*omegaeg,1/2*hb*omegaeg,-1/2*hb*omegaeg-deltaE/2,-1/2*hb*omegaeg-deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2,-1/2*hb*omegaeg+deltaE/2}];\r\nK0=H0-hbar*omegaL*Qm;\r\n(*KI*)\r\n(*降算符Ddown，和升算符Ddagger*)\r\nDdown={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d1*Delta[1/2,1/2,1/2,1/2],d1*Delta[1/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d1*Delta[1/2,-1/2,1/2,1/2],d1*Delta[1/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,3/2,1/2,1/2],0,0,0,0,0,0,0},{d2*Delta[3/2,1/2,1/2,1/2],d2*Delta[3/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,-1/2,1/2,1/2],d2*Delta[3/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{0,d2*Delta[3/2,-3/2,1/2,-1/2],0,0,0,0,0,0}};\r\nDdagger={{0,0,d1*Delta[1/2,1/2,1/2,1/2],d1*Delta[1/2,1/2,1/2,-1/2],d2*Delta[1/2,1/2,3/2,3/2],d2*Delta[1/2,1/2,3/2,1/2],d2*Delta[1/2,1/2,3/2,-1/2],0},{0,0,d1*Delta[1/2,-1/2,1/2,1/2],d1*Delta[1/2,-1/2,1/2,-1/2],0,d2*Delta[1/2,-1/2,3/2,1/2],d2*Delta[1/2,-1/2,3/2,-1/2],d2*Delta[1/2,-1/2,3/2,-3/2]},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};\r\n(*V1t是转动之后的Ddagger部分,V2t是转动之后的Ddown部分*)\r\nV1t=-Ddagger*Et*Exp[I*k0.r0];\r\nV2t=-Ddown*Conjugate[Et]*Exp[-I*k0.r0];\r\nKI=V1t+V2t;",
+   "value": "(*定义哈密顿量，变换后的K*)\r\n(*K0,H0,omegaeg是能量中心,deltaE是基态亚稳态能级差，g1是基态是1/2那个，g2是亚稳态3/2的*)\r\nH0=DiagonalMatrix[{1/2*hbar*omegaeg,1/2*hbar*omegaeg,-1/2*hbar*omegaeg-deltaE/2,-1/2*hbar*omegaeg-deltaE/2,-1/2*hbar*omegaeg+deltaE/2,-1/2*hbar*omegaeg+deltaE/2,-1/2*hbar*omegaeg+deltaE/2,-1/2*hbar*omegaeg+deltaE/2}];\r\nK0=H0-hbar*omegaL*Qm;\r\n(*KI*)\r\n(*降算符Ddown，和升算符Ddagger*)\r\nDdownq1={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,d1*Delta[1/2,1/2,1/2,-1/2],0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d2*Delta[3/2,3/2,1/2,1/2],0,0,0,0,0,0,0},{0,d2*Delta[3/2,1/2,1/2,-1/2],0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};\r\nDdaggerq1=ConjugateTranspose[Ddownq1];\r\n\r\nDdownq0={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d1*Delta[1/2,1/2,1/2,1/2],0,0,0,0,0,0,0},{0,d1*Delta[1/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d2*Delta[3/2,1/2,1/2,1/2],0,0,0,0,0,0,0},{0,d2*Delta[3/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};\r\nDdaggerq0=ConjugateTranspose[Ddownq0];\r\n\r\nDdownqf1={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d1*Delta[1/2,-1/2,1/2,1/2],0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d2*Delta[3/2,-1/2,1/2,1/2],0,0,0,0,0,0,0},{0,d2*Delta[3/2,-3/2,1/2,-1/2],0,0,0,0,0,0}};\r\nDdaggerqf1=ConjugateTranspose[Ddownqf1];\r\n(*Ddown={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{d1*Delta[1/2,1/2,1/2,1/2],d1*Delta[1/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d1*Delta[1/2,-1/2,1/2,1/2],d1*Delta[1/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,3/2,1/2,1/2],0,0,0,0,0,0,0},{d2*Delta[3/2,1/2,1/2,1/2],d2*Delta[3/2,1/2,1/2,-1/2],0,0,0,0,0,0},{d2*Delta[3/2,-1/2,1/2,1/2],d2*Delta[3/2,-1/2,1/2,-1/2],0,0,0,0,0,0},{0,d2*Delta[3/2,-3/2,1/2,-1/2],0,0,0,0,0,0}};*)\r\n(*上面的是球张量的D，还需要变换到直角坐标下去和下面的E作用*)\r\nDx=(-Ddownq1+Ddownqf1)/(Sqrt[2]);\r\nDy=(-Ddownq1-Ddownqf1)/(I*Sqrt[2]);\r\nDz=Ddownq0;\r\nDdx=ConjugateTranspose[Dx];\r\nDdy=ConjugateTranspose[Dy];\r\nDdz=ConjugateTranspose[Dz];\r\nDxyz=1/2*(Ex*Dx+Ey*Dy+Ez*Dz);\r\nDdxyz=1/2*(Ex*Ddx+Ey*Ddy+Ez*Ddz);\r\n(*V1t是转动之后的Ddagger部分,V2t是转动之后的Ddown部分*)\r\nV1t=-Dxyz*Exp[I*phi]*Exp[I*k0.r0];\r\nV2t=-Ddxyz*Exp[-I*phi]*Exp[-I*k0.r0];\r\nKI=V1t+V2t;\r\nKt=K0+KI;",
    "languageId": "wolfram",
    "outputs": [],
    "metadata": {},
    "executionSummary": {
     "timing": {
-     "startTime": 1781170161921,
-     "endTime": 1781170162226
+     "startTime": 1781601593248,
+     "endTime": 1781601594975
     },
-    "executionOrder": 10,
+    "executionOrder": 87,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "(*自发辐射部分，写成矩阵形式，更方便*)\r\n(*d指导给了一个新思路，我们的目标不是把上面的矩阵拆分成矩阵乘法，而是让mma能够识别出rho是一个矩阵，也就是说把上面的耗散项变成rho作为矩阵的函数也能一样的实现\r\n有个问题，就比如激发态ee部分如果认为是对角元，且直接用文章中的eg部分，这样是不会有ee的磁量子数之间的非对角元的，这里的理解，目前ai的说法是rhoee是个矩阵，这里从Δq的角度来理解，就Δq*ρ*Δ是自发辐射的基态部分，这里Δq在文中的代码5.2中可以确定是一个角动量决定的矩阵，显然rho也该是矩阵。这样就得重新算其中存在的对角元*)\r\n(*总的自发辐射系数Gmsa，g1e的是Gms1和g2e的Gms2*)\r\n(*激发态ee减少Sme的矩阵形式*)\r\nSme[rho_?MatrixQ] := Module[{mat = ConstantArray[0, {8, 8}]},\r\n   mat[[1 ;; 2, 1 ;; 2]] = -Gmsa * rho[[1 ;; 2, 1 ;; 2]];\r\n   mat\r\n];\r\n(*基态gg部分的增加Smgd*)\r\n(*首先是Δ的矩阵形式*)\r\n(*DeltaMat12={{Delta[1/2,1/2,1/2,1/2],Delta[1/2,1/2,1/2,-1/2]},{Delta[1/2,-1/2,1/2,1/2],Delta[1/2,-1/2,1/2,-1/2]},{0,0},{0,0},{0,0},{0,0}};\r\nDeltaMat12d=ConjugateTranspose[DeltaMat12];\r\nDeltaMat32={{0,0},{0,0},{Delta[3/2,3/2,1/2,1/2],0},{Delta[3/2,1/2,1/2,1/2],Delta[3/2,1/2,1/2,-1/2]},{Delta[3/2,-1/2,1/2,1/2],Delta[3/2,-1/2,1/2,-1/2]},{0,Delta[3/2,-3/2,1/2,-1/2]}};\r\nDeltaMat32d=ConjugateTranspose[DeltaMat32];*)\r\nDeltaMat12q1={{0,Delta[1/2,1/2,1/2,-1/2]},{0,0},{0,0},{0,0},{0,0},{0,0}};\r\nDeltaMat12dq1=ConjugateTranspose[DeltaMat12q1];\r\nDeltaMat32q1={{0,0},{0,0},{Delta[3/2,3/2,1/2,1/2],0},{0,Delta[3/2,1/2,1/2,-1/2]},{0,0},{0,0}};\r\nDeltaMat32dq1=ConjugateTranspose[DeltaMat32q1];\r\n\r\nDeltaMat12q0={{Delta[1/2,1/2,1/2,1/2],0},{0,Delta[1/2,-1/2,1/2,-1/2]},{0,0},{0,0},{0,0},{0,0}};\r\nDeltaMat12dq0=ConjugateTranspose[DeltaMat12q0];\r\nDeltaMat32q0={{0,0},{0,0},{0,0},{Delta[3/2,1/2,1/2,1/2],0},{0,Delta[3/2,-1/2,1/2,-1/2]},{0,0}};\r\nDeltaMat32dq0=ConjugateTranspose[DeltaMat32q0];\r\n\r\nDeltaMat12qf1={{0,0},{Delta[1/2,-1/2,1/2,1/2],0},{0,0},{0,0},{0,0},{0,0}};\r\nDeltaMat12dqf1=ConjugateTranspose[DeltaMat12qf1];\r\nDeltaMat32qf1={{0,0},{0,0},{0,0},{0,0},{Delta[3/2,-1/2,1/2,1/2],0},{0,Delta[3/2,-3/2,1/2,-1/2]}};\r\nDeltaMat32dqf1=ConjugateTranspose[DeltaMat32qf1];\r\nrhoee={{Subscript[\\[Rho], 1, 1],Subscript[\\[Rho], 1, 2]},{Subscript[\\[Rho], 2, 1],Subscript[\\[Rho], 2, 2]}};\r\n(*组合出gg部分*)\r\nSmgd=2/3*Gms1*DeltaMat12q1.rhoee.DeltaMat12dq1+2/3*Gms1*DeltaMat12q0.rhoee.DeltaMat12dq0+2/3*Gms1*DeltaMat12qf1.rhoee.DeltaMat12dqf1+2/3*Gms2*DeltaMat32q1.rhoee.DeltaMat32dq1+2/3*Gms2*DeltaMat32q0.rhoee.DeltaMat32dq0+2/3*Gms2*DeltaMat32qf1.rhoee.DeltaMat32dqf1;\r\nSmgdFull = ArrayFlatten[{\r\n   {ConstantArray[0, {2, 2}], ConstantArray[0, {2, 6}]},\r\n   {ConstantArray[0, {6, 2}], Smgd}\r\n}];\r\n(*进一步改写成rho的函数的形式*)\r\n(*Smgdt[rho_] := SmgdFull/.{Subscript[\\[Rho], 1, 1]->rho[[1,1]],Subscript[\\[Rho], 1, 2]->rho[[1,2]],Subscript[\\[Rho], 2, 1]->rho[[2,1]],Subscript[\\[Rho], 2, 2]->rho[[2,2]]};*)\r\nSmgdt[rho_?MatrixQ] := Module[{rhoee, smgd6, smgd8},\r\n   rhoee = rho[[1 ;; 2, 1 ;; 2]];   (* 提取激发态 2×2 子块 *)\r\n   \r\n   smgd6 = 2/3*Gms1*(DeltaMat12q1 . rhoee . DeltaMat12dq1 + \r\n                     DeltaMat12q0 . rhoee . DeltaMat12dq0 + \r\n                     DeltaMat12qf1 . rhoee . DeltaMat12dqf1) +\r\n           2/3*Gms2*(DeltaMat32q1 . rhoee . DeltaMat32dq1 + \r\n                     DeltaMat32q0 . rhoee . DeltaMat32dq0 + \r\n                     DeltaMat32qf1 . rhoee . DeltaMat32dqf1);\r\n   \r\n   smgd8 = ConstantArray[0, {8, 8}];\r\n   smgd8[[3 ;; 8, 3 ;; 8]] = smgd6;   (* 塞入右下 6×6 *)\r\n   smgd8\r\n];\r\n(*eg，ge之间的混合部分*)\r\nSmge[rho_?MatrixQ] :={{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{-1/2*Gms1*rho[[3,1]],-1/2*Gms1*rho[[3,2]],0,0,0,0,0,0},{-1/2*Gms1*rho[[4,1]],-1/2*Gms1*rho[[4,2]],0,0,0,0,0,0},{-1/2*Gms2*rho[[5,1]],-1/2*Gms2*rho[[5,2]],0,0,0,0,0,0},{-1/2*Gms2*rho[[6,1]],-1/2*Gms2*rho[[6,2]],0,0,0,0,0,0},{-1/2*Gms2*rho[[7,1]],-1/2*Gms2*rho[[7,2]],0,0,0,0,0,0},{-1/2*Gms2*rho[[8,1]],-1/2*Gms2*rho[[8,2]],0,0,0,0,0,0}};\r\nSmeg[rho_?MatrixQ] :={{0,0,-1/2*Gms1*rho[[1,3]],-1/2*Gms1*rho[[1,4]],-1/2*Gms2*rho[[1,5]],-1/2*Gms2*rho[[1,6]],-1/2*Gms2*rho[[1,7]],-1/2*Gms2*rho[[1,8]]},{0,0,-1/2*Gms1*rho[[2,3]],-1/2*Gms1*rho[[2,4]],-1/2*Gms2*rho[[2,5]],-1/2*Gms2*rho[[2,6]],-1/2*Gms2*rho[[2,7]],-1/2*Gms2*rho[[2,8]]},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};\r\n(*总体耗散项*)\r\nSmtotal[rho_?MatrixQ] := Smgdt[rho] + Smge[rho] + Smeg[rho] + Sme[rho];",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781601594975,
+     "endTime": 1781601596632
+    },
+    "executionOrder": 107,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "(*check \r\ntrho = Array[Subscript[\\[Rho], #1, #2] &, {8, 8}];\r\nSimplify[Tr[Smtotal[trho]]]*)",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wrow><w></w><wb>(</wb><wrow><w></w><w>Gms1</w><w>+</w><w>Gms2</w><w>-</w><w>Gmsa</w></wrow><wb>)</wb></wrow><w></w><wrow><w></w><wb>(</wb><wrow><w></w><wsub><w></w><w>ρ</w><w><wrow><w></w><w>1</w><w>,</w><w>1</w></wrow></w></wsub><w>+</w><wsub><w></w><w>ρ</w><w><wrow><w></w><w>2</w><w>,</w><w>2</w></wrow></w></wsub></wrow><wb>)</wb></wrow></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "(Gms1 + Gms2 - Gmsa)*(Subscript[ρ, 1, 1] + Subscript[ρ, 2, 2])",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "f1b4ae23-46dc-43fc-9c87-e00dff4e20af",
+     "metadata": {
+      "cellLabel": "Out[47]= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781599197676,
+     "endTime": 1781599197940
+    },
+    "executionOrder": 46,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "(*计算无自发辐射情况*)\r\nsolnoSe[tMax_,e1_,e2_,g11_,g12_,g21_,g22_,g23_,g24_] := NDSolve[\r\n  {\r\n   rho'[t] == -I/hbar (Kt . rho[t] - rho[t] . Kt) ,\r\n   rho[0] == rho0t[e1,e2,g11,g12,g21,g22,g23,g24]\r\n  },\r\n  rho,\r\n  {t, 0, tMax},\r\n  MaxStepSize -> tMax/1000,            (* 限制最大步长 *)\r\n  AccuracyGoal -> 8,                   (* 精度目标 *)\r\n  PrecisionGoal -> 8,                  (* 精度目标 *)\r\n  Method -> \"StiffnessSwitching\"       (* 如果方程刚性，自动切换方法 *)\r\n];\r\nresolnoSe[tMax_, e1_, e2_, g11_, g12_, g21_, g22_, g23_, g24_] := \r\n  rho /. solnoSe[tMax, e1, e2, g11, g12, g21, g22, g23, g24][[1]];",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781601597908,
+     "endTime": 1781601598076
+    },
+    "executionOrder": 127,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "(*计算有自发辐射情况*)\r\nsolSe[tMax_,e1_,e2_,g11_,g12_,g21_,g22_,g23_,g24_] := NDSolve[\r\n  {\r\n   rho'[t] == -I/hbar (Kt . rho[t] - rho[t] . Kt) + Smtotal[rho[t]],\r\n   rho[0] == rho0t[e1,e2,g11,g12,g21,g22,g23,g24]\r\n  },\r\n  rho,\r\n  {t, 0, tMax},\r\n  MaxStepSize -> tMax/1000,            (* 限制最大步长 *)\r\n  AccuracyGoal -> 8,                   (* 精度目标 *)\r\n  PrecisionGoal -> 8,                  (* 精度目标 *)\r\n  Method -> \"StiffnessSwitching\"       (* 如果方程刚性，自动切换方法 *)\r\n];\r\nresolSe[tMax_, e1_, e2_, g11_, g12_, g21_, g22_, g23_, g24_] := \r\n  rho /. solSe[tMax, e1, e2, g11, g12, g21, g22, g23, g24][[1]];",
+   "languageId": "wolfram",
+   "outputs": [],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781601599152,
+     "endTime": 1781601599328
+    },
+    "executionOrder": 129,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "(*resolSe[10, 0, 0, 1, 0, 0, 0, 0, 0]*)\r\n rho0t[0, 0, 1, 0, 0, 0, 0, 0]",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>{</wb><wrow><w></w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>1</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow></wrow><wb>}</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "{{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "2b49d730-3d78-434a-95a7-5e1a4068066a",
+     "metadata": {
+      "cellLabel": "Out[65]= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781601572173,
+     "endTime": 1781601572339
+    },
+    "executionOrder": 65,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "trfn=resolSe[10, 0, 0, 1, 0, 0, 0, 0, 0];",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><w>rFn</w><wrow><w></w><wb>[</wb><w>0</w><wb>]</wb></wrow></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "rFn[0]",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "e337e08c-b444-420e-87c8-49d4f97a2b16",
+     "metadata": {
+      "cellLabel": "Out[134]= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781602014227,
+     "endTime": 1781602016457
+    },
+    "executionOrder": 133,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "Chop[trfn[0]]    (* 应返回初始的 8×8 矩阵 *)",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>{</wb><wrow><w></w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>1.</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow></wrow><wb>}</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "{{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 1., 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}}",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "ab9dafbb-d1ad-4e0e-beca-ac7f10060472",
+     "metadata": {
+      "cellLabel": "Out[141]= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781602105107,
+     "endTime": 1781602105293
+    },
+    "executionOrder": 141,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "Chop[trfn[5]   ]        (* 应返回 t=5 时的 8×8 矩阵 *)",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wb>{</wb><wrow><w></w><wrow><w></w><wb>{</wb><wrow><w></w><w>0.00313802</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.0156366</w><w> </w></wrow><w>+</w><wrow><w></w><w>0.00955674</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><wrow><w></w><wrow><w></w><w>-</w><w>0.000898069</w></wrow><w>+</w><wrow><w></w><w>0.000653629</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.00692737</w><w> </w></wrow><w>+</w><wrow><w></w><w>0.00875604</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><w>0.0329751</w><w>,</w><wrow><w></w><wrow><w></w><w>0.174187</w><w> </w></wrow><w>+</w><wrow><w></w><w>0.0896725</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>-</w><w>0.0157178</w></wrow><w>-</w><wrow><w></w><w>0.00420856</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.0383245</w><w> </w></wrow><w>+</w><wrow><w></w><w>0.023109</w><w></w><w>𝕚</w></wrow></wrow></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.174187</w><w> </w></wrow><w>-</w><wrow><w></w><w>0.0896725</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0.502166</w><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>-</w><w>0.041412</w></wrow><w>+</w><wrow><w></w><w>0.0325216</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.0704836</w><w> </w></wrow><w>-</w><wrow><w></w><w>0.0647077</w><w></w><w>𝕚</w></wrow></wrow></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>0.0156366</w><w> </w></wrow><w>-</w><wrow><w></w><w>0.00955674</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0.0744154</w><w>,</w><wrow><w></w><wrow><w></w><w>0.00112707</w><w> </w></wrow><w>+</w><wrow><w></w><w>0.00654505</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>-</w><w>0.00136899</w></wrow><w>-</w><wrow><w></w><w>0.00861623</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>-</w><w>0.000898069</w></wrow><w>-</w><wrow><w></w><w>0.000653629</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.00112707</w><w> </w></wrow><w>-</w><wrow><w></w><w>0.00654505</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0.00904809</w><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.00657735</w><w> </w></wrow><w>+</w><wrow><w></w><w>0.00121541</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>-</w><w>0.0157178</w></wrow><w>+</w><wrow><w></w><w>0.00420856</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><wrow><w></w><wrow><w></w><w>-</w><w>0.041412</w></wrow><w>-</w><wrow><w></w><w>0.0325216</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><w>0.0716657</w><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.0115884</w><w> </w></wrow><w>+</w><wrow><w></w><w>0.00121541</w><w></w><w>𝕚</w></wrow></wrow></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><wrow><w></w><wrow><w></w><w>0.00692737</w><w> </w></wrow><w>-</w><wrow><w></w><w>0.00875604</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>-</w><w>0.00136899</w></wrow><w>+</w><wrow><w></w><w>0.00861623</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><wrow><w></w><wrow><w></w><w>0.00657735</w><w> </w></wrow><w>-</w><wrow><w></w><w>0.00121541</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><w>0.132475</w><w>,</w><w>0</w></wrow><wb>}</wb></wrow><w>,</w><wrow><w></w><wb>{</wb><wrow><w></w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.0383245</w><w> </w></wrow><w>-</w><wrow><w></w><w>0.023109</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><wrow><w></w><wrow><w></w><w>0.0704836</w><w> </w></wrow><w>+</w><wrow><w></w><w>0.0647077</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><w>0</w><w>,</w><wrow><w></w><wrow><w></w><w>0.0115884</w><w> </w></wrow><w>-</w><wrow><w></w><w>0.00121541</w><w></w><w>𝕚</w></wrow></wrow><w>,</w><w>0</w><w>,</w><w>0.174116</w></wrow><wb>}</wb></wrow></wrow><wb>}</wb></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "{{0.003138020613500327, 0, 0, 0.015636568472360987 + 0.00955674362750715*I, -0.0008980689403225447 + 0.0006536285493906972*I, 0, 0.006927374456135342 + 0.008756044430919513*I, 0}, {0, 0.032975149598564214, 0.17418667435484597 + 0.08967254983495031*I, 0, 0, -0.01571779001867554 - 0.004208558668921568*I, 0, 0.038324506475803696 + 0.02310897981828041*I}, {0, 0.17418667435484597 - 0.08967254983495031*I, 0.5021664840370449, 0, 0, -0.04141197589106723 + 0.03252159488207859*I, 0, 0.07048355334506094 - 0.06470774440385813*I}, {0.015636568472360987 - 0.00955674362750715*I, 0, 0, 0.07441538270301665, 0.001127071740521543 + 0.006545054275402808*I, 0, -0.0013689925666410785 - 0.008616227615906916*I, 0}, {-0.0008980689403225447 - 0.0006536285493906972*I, 0, 0, 0.001127071740521543 - 0.006545054275402808*I, 0.009048089885701084, 0, 0.006577350466034469 + 0.0012154116873728383*I, 0}, {0, -0.01571779001867554 + 0.004208558668921568*I, -0.04141197589106723 - 0.03252159488207859*I, 0, 0, 0.07166573242326565, 0, 0.011588371578711733 + 0.001215411687372838*I}, {0.006927374456135342 - 0.008756044430919513*I, 0, 0, -0.0013689925666410783 + 0.008616227615906916*I, 0.006577350466034469 - 0.0012154116873728383*I, 0, 0.13247473361322942, 0}, {0, 0.03832450647580369 - 0.02310897981828041*I, 0.07048355334506094 + 0.06470774440385813*I, 0, 0, 0.011588371578711733 - 0.0012154116873728381*I, 0, 0.17411640712567772}}",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "3390c2d6-c4ec-4b7b-aa0a-830df35856be",
+     "metadata": {
+      "cellLabel": "Out[142]= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781602124098,
+     "endTime": 1781602124275
+    },
+    "executionOrder": 142,
+    "success": true
+   }
+  },
+  {
+   "kind": 2,
+   "value": "trfn[5][[1, 1]]   (* 应返回单个数字 *)\r\ntrfn[5][[3, 3]]   (* 应返回单个数字 *)",
+   "languageId": "wolfram",
+   "outputs": [
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wrow><w></w><w>0.00313802</w><w> </w></wrow><w>+</w><wrow><w></w><wsup><w></w><w>1.46581&#215;10</w><w><w>-21</w></w></wsup><w></w><w>𝕚</w></wrow></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "0.003138020613500327 + 1.4658054218406285*^-21*I",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "1963ce4c-8708-432e-8247-de495b41b6e3",
+     "metadata": {
+      "cellLabel": "Out[139]= ",
+      "isBoxData": false
+     }
+    },
+    {
+     "items": [
+      {
+       "data": "<div class=\"wexpr\"><wrow><w></w><wrow><w></w><w>0.502166</w><w> </w></wrow><w>+</w><wrow><w></w><wsup><w></w><w>1.85296&#215;10</w><w><w>-19</w></w></wsup><w></w><w>𝕚</w></wrow></wrow></div>",
+       "mime": "x-application/wolfram-language-html"
+      },
+      {
+       "data": "0.5021664840370449 + 1.8529647155858246*^-19*I",
+       "mime": "text/plain"
+      }
+     ],
+     "id": "b5463182-10c7-4795-a45c-50f8306ae8a6",
+     "metadata": {
+      "cellLabel": "Out[140]= ",
+      "isBoxData": false
+     }
+    }
+   ],
+   "metadata": {},
+   "executionSummary": {
+    "timing": {
+     "startTime": 1781602047285,
+     "endTime": 1781602047568
+    },
+    "executionOrder": 139,
     "success": true
    }
   },
